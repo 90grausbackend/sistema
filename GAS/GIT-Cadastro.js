@@ -22,6 +22,12 @@ const ABA_VENDAS_SERVICOS = "Vendas_Servicos";
 const ABA_VENDAS_PRODUTOS = "Vendas_Produtos";
 const ABA_CEP = "CEP";
 
+const PROP_LAST_ID   = "LAST_CLIENTE_ID"; // ID sequencial
+const PROP_CPF_INDEX = "CPF_INDEX";       // JSON com CPFs cadastrados
+const CACHE_CEP_KEY  = "CEP_DATA_CACHE";  // chave de cache para dados de CEP
+const CACHE_TTL_SEC  = 6 * 60 * 60;       // 6 horas
+const CSRF_TTL_SEC   = 5 * 60;            // 5 minutos para token CSRF
+
 // BASE_URL
 fetch(BASE_URL, {
   method: "POST",
