@@ -7,9 +7,15 @@
 // ****************************************
 
 
-
 // Variáveis globais
 let dependenteIndex = 0;
+
+// BUSCAR CSRF TOKEN
+fetch(BASE_URL + "?action=csrf")
+  .then(r => r.json())
+  .then(data => {
+    document.getElementById("csrfToken").value = data.token;
+  });
 
 // Utilitários
 function cleanNumber(val){ return val ? String(val).replace(/\D/g,'') : ''; }
