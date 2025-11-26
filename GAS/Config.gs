@@ -16,11 +16,11 @@ function include(filename) {
 }
 
 
-
 // ========================================
 // 2. CONSTANTES GLOBAIS
 // ========================================
-const ID = "1Mb_TIXgRk363UT6JrjtxmVZrrkf_vFt_ZV-kYVmjfR4";
+const BASE_URL = "https://script.google.com/macros/s/AKfycbyHgg9Ks5nsLMb4KOg9pYIeLjmch7I8KsaOD-tUjMdl/dev";
+const SHEET_ID = "1m_y_tVy9Cu_iKtWMJy8tHomUQksBr9TXQKTwhj5Gt6s";
 const ABA_CADASTROS = "Cadastros";
 const ABA_CEP = "CEP";
 const ABA_CHECKINS = "Checkins";
@@ -31,28 +31,33 @@ const ABA_TABELAS_DE_PRECOS = "Tabelas_de_Precos";
 const ABA_VENDAS_SERVICOS = "Vendas_Servicos";
 const ABA_VENDAS_PRODUTOS = "Vendas_Produtos";
 const ABA_COMANDAS = "Comandas";
-const BASE_URL = "https://script.google.com/macros/s/SEU_DEPLOY_ID/exec";
-
 
 
 // ========================================
-// 3. URL DE CADA HTML
+// 3. doGet
 // ========================================
-// Decide qual arquivo HTML servir com base nos parâmetros da URL.
 function doGet(e) {
-  // O parâmetro 'e' contém informações sobre a requisição (incluindo parâmetros da URL).
-  const page = e.parameter.page; 
-  let template;
+  const action = e.parameter.action;
 
-  if (page === 'cadastro') {
-    // Se a URL for ?page=cadastro, serve o arquivo Cadastro.html
-    template = HtmlService.createTemplateFromFile('Cadastro_formulario');
-  } else {
-    // Caso contrário (ou se não houver parâmetro), serve o Index.html (default)
-    template = HtmlService.createTemplateFromFile('Sistema');
+  // Endpoint simples para teste
+  if (!action) {
+    return ContentService
+      .createTextOutput(JSON.stringify({ status: "ok", message: "API ONLINE" }))
+      .setMimeType(ContentService.MimeType.JSON);
   }
-  
-  return template.evaluate()
-      .setTitle('Nome do Sistema')
-      .setXFrameOptionsMode(HtmlService.XFrameOptionsMode.ALLOWALL); // Importante para incorporar ou se precisar de permissões
+
+  // Exemplo de endpoint GET: consultar CEP, buscar registro etc.
+  if (action === "buscar") {
+    const termo = e.parameter.termo || "";
+    const resultado = buscarRegistro(termo); // sua função interna
+    return ContentService
+      .createTextOutput(JSON.stringify(resultado))
+      .setMimeType(ContentService.MimeType.JSON);
+  }
+
+  // Você pode ir adicionando outros actions aqui...
+
+  return ContentService
+    .createTextOutput(JSON.stringify({ error: "Ação desconhecida" }))
+    .setMimeType(ContentService.MimeType.JSON);
 }
