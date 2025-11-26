@@ -10,6 +10,18 @@
 // Variáveis globais
 let dependenteIndex = 0;
 
+const BASE_URL = "https://script.google.com/macros/s/AKfycbynvS8HXtHV8Nxf3FaLXpZNkBpySL7ThQW7qUGCR_nemtjq10qz9rWfnxCtqgaD7ZcjCw/exec";
+const SHEET_ID = "1m_y_tVy9Cu_iKtWMJy8tHomUQksBr9TXQKTwhj5Gt6s";
+const ABA_TABELAS_DE_PRECOS = "Tabelas_de_Precos";
+const ABA_CADASTROS = "Cadastros";
+const ABA_CHECKINS = "Checkins";
+const ABA_DIARIAS = "Diarias";
+const ABA_PAUSAS = "Pausas";
+const ABA_COMANDAS = "Comandas";
+const ABA_VENDAS_SERVICOS = "Vendas_Servicos";
+const ABA_VENDAS_PRODUTOS = "Vendas_Produtos";
+const ABA_CEP = "CEP";
+
 // BASE_URL
 fetch(BASE_URL, {
   method: "POST",
