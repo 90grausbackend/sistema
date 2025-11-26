@@ -18,7 +18,7 @@ let dependenteIndex = 0;
 // ========================================
 // BUSCAR CSRF TOKEN
 // ========================================
-fetch(BASE_URL + "?action=csrf")
+fetch(BASE_URL + "?action=getCsrfToken")
   .then(r => r.json())
   .then(data => {
     document.getElementById("csrfToken").value = data.token;
@@ -71,7 +71,7 @@ async function getCSRFTokenAsync() {
 
   // 2) GitHub Pages → buscar do endpoint GAS
   try {
-    const resp = await fetch(`${BASE_URL}?mode=csrf`);
+    const resp = await fetch(`${BASE_URL}?action=getCsrfToken`);
     if (!resp.ok) return '';
     const j = await resp.json();
     return j && j.csrfToken ? j.csrfToken : '';
