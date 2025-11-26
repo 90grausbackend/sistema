@@ -7,26 +7,17 @@
 // ****************************************
 
 
-// Variáveis globais
+// ========================================
+// VARIÁVEIS GLOBAIS
+// ========================================
+const BASE_URL = "https://script.google.com/macros/s/AKfycbynvS8HXtHV8Nxf3FaLXpZNkBpySL7ThQW7qUGCR_nemtjq10qz9rWfnxCtqgaD7ZcjCw/exec";
+
+const tokenRes = await fetch(BASE_URL + "?action=getCsrfToken");
+const { csrfToken } = await tokenRes.json();
+data.csrfToken = csrfToken;
+
 let dependenteIndex = 0;
 
-const BASE_URL = "https://script.google.com/macros/s/AKfycbynvS8HXtHV8Nxf3FaLXpZNkBpySL7ThQW7qUGCR_nemtjq10qz9rWfnxCtqgaD7ZcjCw/exec";
-const SHEET_ID = "1m_y_tVy9Cu_iKtWMJy8tHomUQksBr9TXQKTwhj5Gt6s";
-const ABA_TABELAS_DE_PRECOS = "Tabelas_de_Precos";
-const ABA_CADASTROS = "Cadastros";
-const ABA_CHECKINS = "Checkins";
-const ABA_DIARIAS = "Diarias";
-const ABA_PAUSAS = "Pausas";
-const ABA_COMANDAS = "Comandas";
-const ABA_VENDAS_SERVICOS = "Vendas_Servicos";
-const ABA_VENDAS_PRODUTOS = "Vendas_Produtos";
-const ABA_CEP = "CEP";
-
-const PROP_LAST_ID   = "LAST_CLIENTE_ID"; // ID sequencial
-const PROP_CPF_INDEX = "CPF_INDEX";       // JSON com CPFs cadastrados
-const CACHE_CEP_KEY  = "CEP_DATA_CACHE";  // chave de cache para dados de CEP
-const CACHE_TTL_SEC  = 6 * 60 * 60;       // 6 horas
-const CSRF_TTL_SEC   = 5 * 60;            // 5 minutos para token CSRF
 
 // BASE_URL
 fetch(BASE_URL, {
@@ -38,17 +29,23 @@ fetch(BASE_URL, {
 .then(res => console.log(res))
 .catch(err => console.error(err));
 
+
+// ========================================
 // BUSCAR CSRF TOKEN
+// ========================================
 fetch(BASE_URL + "?action=csrf")
   .then(r => r.json())
   .then(data => {
     document.getElementById("csrfToken").value = data.token;
   });
 
-// Utilitários
-function cleanNumber(val){ return val ? String(val).replace(/\D/g,'') : ''; }
-function normalizeName(name){ return String(name || '').toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'').replace(/ç/g,'c').trim(); }
-function isValidCpf(cpf){
+
+// ========================================
+// UTILITÁRIOS
+// ========================================
+function cleanNumber(val) { return val ? String(val).replace(/\D/g,'') : ''; }
+function normalizeName(name) { return String(name || '').toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'').replace(/ç/g,'c').trim(); }
+function isValidCpf(cpf) {
   cpf = cleanNumber(cpf);
   if(cpf.length!==11 || /^(\d)\1{10}$/.test(cpf)) return false;
   let sum=0, rem;
@@ -61,12 +58,12 @@ function isValidCpf(cpf){
   if(rem!==parseInt(cpf[10],10)) return false;
   return true;
 }
-function maskCpf(val){ val=cleanNumber(val).substring(0,11); const p=val.match(/^(\d{3})(\d{3})(\d{3})(\d{2})?$/); return p ? `${p[1]}.${p[2]}.${p[3]}${p[4]?'-'+p[4]:''}` : val; }
-function maskTelefone(val){ val=cleanNumber(val).substring(0,11); return val.replace(/^(\d{2})(\d{5})(\d{4})$/, '($1) $2-$3'); }
-function maskCep(val){ val=cleanNumber(val).substring(0,8); const p=val.match(/^(\d{5})(\d{3})?$/); return p ? `${p[1]}${p[2]?'-'+p[2]:''}` : val; }
+function maskCpf(val) { val=cleanNumber(val).substring(0,11); const p=val.match(/^(\d{3})(\d{3})(\d{3})(\d{2})?$/); return p ? `${p[1]}.${p[2]}.${p[3]}${p[4]?'-'+p[4]:''}` : val; }
+function maskTelefone(val) { val=cleanNumber(val).substring(0,11); return val.replace(/^(\d{2})(\d{5})(\d{4})$/, '($1) $2-$3'); }
+function maskCep(val) { val=cleanNumber(val).substring(0,8); const p=val.match(/^(\d{5})(\d{3})?$/); return p ? `${p[1]}${p[2]?'-'+p[2]:''}` : val; }
 
 // ---------- Getter CSRF seguro (DOM -> optional fetch fallback) ----------
-function getCSRFToken(){
+function getCSRFToken() {
   // 1) tenta pegar do DOM
   const el = document.getElementById('csrfToken');
   if (el && el.value) return el.value;
@@ -82,7 +79,7 @@ function getCSRFToken(){
     return '';
   }
 }
-async function getCSRFTokenAsync(){
+async function getCSRFTokenAsync() {
   // 1) se existir no DOM (quando HTML é servido pelo GAS)
   const el = document.getElementById('csrfToken');
   if (el && el.value) return el.value;
@@ -101,7 +98,7 @@ async function getCSRFTokenAsync(){
 
 
 // ---------- Feedback helper ----------
-function showFeedback(input, msg){
+function showFeedback(input, msg) {
   if (!input) return;
   const fb = document.getElementById(input.id + '-feedback') || input.closest('[data-group]') && input.closest('[data-group]').querySelector('[data-feedback]');
   if (fb) fb.textContent = msg || '';
@@ -109,7 +106,7 @@ function showFeedback(input, msg){
 }
 
 // ---------- Verificação titular (segura contra nulls) ----------
-function checkTitularFormValidity(){
+function checkTitularFormValidity() {
   const nome = document.getElementById('nome');
   const cpf  = document.getElementById('cpf');
   const tel  = document.getElementById('telefone');
@@ -131,7 +128,7 @@ function checkTitularFormValidity(){
 }
 
 // ---------- Dependentes ----------
-function checkDependenteFormValidity(){
+function checkDependenteFormValidity() {
   const deps = document.querySelectorAll('#dependentesList .dependente-template');
   let valid = true;
   deps.forEach((d, i) => {
@@ -149,7 +146,7 @@ function checkDependenteFormValidity(){
   return valid;
 }
 
-function addDependente(){
+function addDependente() {
   dependenteIndex++;
   const tpl = document.getElementById('dependenteTemplate');
   if (!tpl) return;
@@ -208,7 +205,7 @@ function addDependente(){
 }
 
 // ---------- Coleta de dados (segura) ----------
-function collectAllFormData(){
+function collectAllFormData() {
   const titular = {};
   document.querySelectorAll('#cadastroForm [data-key]').forEach(el => {
     if (!el) return;
@@ -239,7 +236,7 @@ function collectAllFormData(){
 }
 
 // ---------- Proteção contra double submit ----------
-function lockSubmit(timeout = 1500){
+function lockSubmit(timeout = 1500) {
   if (lockSubmit.locked) return false;
   lockSubmit.locked = true;
   setTimeout(()=> { lockSubmit.locked = false; }, timeout);
@@ -247,7 +244,7 @@ function lockSubmit(timeout = 1500){
 }
 
 // ---------- Envio via fetch (GAS WebApp) ----------
-function submitAllData(e){
+function submitAllData(e) {
   if (e && e.preventDefault) e.preventDefault();
   if (!lockSubmit()) return; // evita calls simultâneas
 
@@ -260,14 +257,14 @@ function submitAllData(e){
   if (loading) loading.classList.remove('hidden');
 
   // validações locais
-  if (!checkTitularFormValidity()){
+  if (!checkTitularFormValidity()) {
     alert('Corrija dados do titular.');
     if (btnSalvar) btnSalvar.disabled = false;
     if (btnDep) btnDep.disabled = false;
     if (loading) loading.classList.add('hidden');
     return;
   }
-  if (!checkDependenteFormValidity()){
+  if (!checkDependenteFormValidity()) {
     alert('Corrija dados dos dependentes.');
     if (btnSalvar) btnSalvar.disabled = false;
     if (btnDep) btnDep.disabled = false;
@@ -278,7 +275,7 @@ function submitAllData(e){
   const data = collectAllFormData();
 
   // fetch para endpoint GAS (substitua pela sua URL deploy)
-  const GAS_URL = "https://script.google.com/macros/s/SEU_DEPLOY_ID/exec";
+  const GAS_URL = BASE_URL;
 
   fetch(GAS_URL, {
     method: "POST",
