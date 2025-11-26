@@ -19,7 +19,7 @@ function include(filename) {
 // ========================================
 // 2. CONSTANTES GLOBAIS
 // ========================================
-const BASE_URL = "https://script.google.com/macros/s/AKfycbyHgg9Ks5nsLMb4KOg9pYIeLjmch7I8KsaOD-tUjMdl/dev";
+const BASE_URL = "https://script.google.com/macros/s/AKfycbynvS8HXtHV8Nxf3FaLXpZNkBpySL7ThQW7qUGCR_nemtjq10qz9rWfnxCtqgaD7ZcjCw/exec";
 const SHEET_ID = "1m_y_tVy9Cu_iKtWMJy8tHomUQksBr9TXQKTwhj5Gt6s";
 const ABA_CADASTROS = "Cadastros";
 const ABA_CEP = "CEP";
