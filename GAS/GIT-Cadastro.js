@@ -340,6 +340,7 @@ function submitAllData(e) {
     if (btnDep) btnDep.disabled = false;
     if (loading) loading.classList.add('hidden');
   });
+}
 
 // ---------- Inicialização ----------
 document.addEventListener('DOMContentLoaded', () => {
