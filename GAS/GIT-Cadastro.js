@@ -10,7 +10,7 @@
 // ========================================
 // VARIÁVEIS GLOBAIS
 // ========================================
-const BASE_URL = "https://script.google.com/macros/s/AKfycbynvS8HXtHV8Nxf3FaLXpZNkBpySL7ThQW7qUGCR_nemtjq10qz9rWfnxCtqgaD7ZcjCw/exec";
+const BASE_URL = "https://script.google.com/macros/s/AKfycbwePL-zfa9zg39pp-P7S-HfAGMnCv1_gdnNR0-U-MR28UnCWPD5mZzZBkEnfM8G2zsuVA/exec";
 
 let dependenteIndex = 0;
 
