@@ -21,6 +21,13 @@ const CSRF_TTL_SEC   = 5 * 60;            // 5 minutos para token CSRF
 // CSRF TOKEN
 // ========================================
 // Gera CSRF Token single-use
+function doGet(e) {
+  if (e.parameter.action === "getCsrfToken") {
+    return ContentService.createTextOutput(JSON.stringify({ csrfToken: getCsrfToken() }))
+      .setMimeType(ContentService.MimeType.JSON);
+  }
+}
+
 function getCsrfToken() {
   const token = Utilities.getUuid();
   CacheService.getScriptCache().put(token, "1", CSRF_TTL_SEC);
@@ -219,7 +226,7 @@ function salvarCadastro(formData) {
     abaCadastros.getRange(abaCadastros.getLastRow() + 1, 1, registros.length, registros[0].length)
       .setValues(registros);
 
-    return { status: 'sucesso' };
+    return { status: 'Cadastro salvo com sucesso' };
 
   } catch (err) {
     return { status: 'erro', message: err.message };
