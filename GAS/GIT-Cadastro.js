@@ -10,6 +10,16 @@
 // Variáveis globais
 let dependenteIndex = 0;
 
+// BASE_URL
+fetch(BASE_URL, {
+  method: "POST",
+  headers: { "Content-Type": "application/json" },
+  body: JSON.stringify(data)
+})
+.then(r => r.json())
+.then(res => console.log(res))
+.catch(err => console.error(err));
+
 // BUSCAR CSRF TOKEN
 fetch(BASE_URL + "?action=csrf")
   .then(r => r.json())
