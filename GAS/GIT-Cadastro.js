@@ -12,22 +12,7 @@
 // ========================================
 const BASE_URL = "https://script.google.com/macros/s/AKfycbynvS8HXtHV8Nxf3FaLXpZNkBpySL7ThQW7qUGCR_nemtjq10qz9rWfnxCtqgaD7ZcjCw/exec";
 
-const tokenRes = await fetch(BASE_URL + "?action=getCsrfToken");
-const { csrfToken } = await tokenRes.json();
-data.csrfToken = csrfToken;
-
 let dependenteIndex = 0;
-
-
-// BASE_URL
-fetch(BASE_URL, {
-  method: "POST",
-  headers: { "Content-Type": "application/json" },
-  body: JSON.stringify(data)
-})
-.then(r => r.json())
-.then(res => console.log(res))
-.catch(err => console.error(err));
 
 
 // ========================================
