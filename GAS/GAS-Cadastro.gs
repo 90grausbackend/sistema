@@ -238,7 +238,9 @@ function doPost(e) {
     return ContentService.createTextOutput(JSON.stringify(res))
       .setMimeType(ContentService.MimeType.JSON);
   } catch (err) {
-    return ContentService.createTextOutput(JSON.stringify({status:"erro", message:err.message}))
-      .setMimeType(ContentService.MimeType.JSON);
+    return ContentService.createTextOutput(JSON.stringify({
+      status: "erro",
+      message: err.message
+    })).setMimeType(ContentService.MimeType.JSON);
   }
 }
