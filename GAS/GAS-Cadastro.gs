@@ -226,7 +226,7 @@ function salvarCadastro(formData) {
     abaCadastros.getRange(abaCadastros.getLastRow() + 1, 1, registros.length, registros[0].length)
       .setValues(registros);
 
-    return { status: 'Cadastro salvo com sucesso' };
+    return { status: 'sucesso', message: 'Cadastro salvo com sucesso' };
 
   } catch (err) {
     return { status: 'erro', message: err.message };
@@ -238,16 +238,109 @@ function salvarCadastro(formData) {
 // ========================================
 // Endpoint para GitHub Pages
 // ========================================
+// ========================================
+// CONFIGURAÇÃO CORS CENTRALIZADA
+// ========================================
+const CORS_HEADERS = {
+  'Access-Control-Allow-Origin': '*', 
+  'Access-Control-Allow-Methods': 'GET, POST, OPTIONS', 
+  'Access-Control-Allow-Headers': 'Content-Type, X-CSRF-Token'
+};
+
+// ========================================
+// FUNÇÃO AUXILIAR PARA CRIAR E APLICAR HEADERS (Construtora de Resposta)
+// Esta função DEVE existir em um dos seus arquivos .gs
+// ========================================
+function createCorsResponse_(resultado) {
+  // 1. Cria o objeto ContentService.TextOutput com o resultado
+  const output = ContentService.createTextOutput(JSON.stringify(resultado));
+  output.setMimeType(ContentService.MimeType.JSON);
+
+  // 2. Aplica os headers (assume que CORS_HEADERS existe globalmente)
+  for (const header in CORS_HEADERS) {
+    output.setHeader(header, CORS_HEADERS[header]);
+  }
+  
+  // 3. Retorna o objeto pronto
+  return output;
+}
+
+// ========================================
+// FUNÇÃO AUXILIAR PARA APLICAR HEADERS (Revisão Final)
+// ========================================
+function setCorsHeaders_(output) {
+  // VERIFICAÇÃO CRÍTICA: Garante que o método exista antes de chamar
+  // Isso deve prevenir o erro "is not a function"
+  if (typeof output.setHeader === 'function') {
+    for (const header in CORS_HEADERS) {
+      output.setHeader(header, CORS_HEADERS[header]);
+    }
+  } else {
+    // Caso de falha: Loga o erro, mas não trava o App Script (opcional, mas seguro)
+    Logger.log("Erro de Tipagem: Objeto de saída não é um TextOutput. Headers não aplicados.");
+  }
+  return output;
+}
+
+// ========================================
+// 1. MANIPULADOR DE REQUISIÇÕES GET / OPTIONS / CADASTRO
+// ========================================
+function doGet(e) {
+  let resultado;
+
+  try {
+    // Roteamento
+    if (e.parameter.action === 'salvarCadastro') {
+      // Processamento de dados (já dentro do try/catch)
+      const formData = e.parameter; 
+      resultado = processarRequisicaoDeCadastro(formData); 
+      
+    } else if (e.parameter.action === 'getCsrfToken') {
+      // Isolando a falha do token
+      try {
+          resultado = { status: 'ok', token: getCsrfToken() };
+      } catch (tokenErr) {
+          resultado = { status: 'erro', message: 'Falha ao obter Token: ' + tokenErr.message };
+      }
+      
+    } else {
+      // Resposta padrão e segura para o pré-voo OPTIONS ou GET simples
+      resultado = { status: 'ok', message: 'API Service Running.' };
+    }
+
+  } catch (err) {
+    // Falha em qualquer roteamento
+    resultado = { 
+      status: 'erro', 
+      message: 'Falha no Roteamento: ' + err.message 
+    };
+  }
+  
+  // Criação do ContentService.TextOutput fora do try/catch para evitar o TypeError
+  const output = ContentService.createTextOutput(JSON.stringify(resultado));
+  output.setMimeType(ContentService.MimeType.JSON);
+  
+  // Aplica os headers CORS
+  return setCorsHeaders_(output); 
+}
+
+
+// 2. MANIPULADOR DE REQUISIÇÕES POST
+// Recebe dados JSON no corpo da requisição (Ideal para cadastro)
 function doPost(e) {
+  let resultado;
+
   try {
     const data = JSON.parse(e.postData.contents);
-    const res = salvarCadastro(data);
-    return ContentService.createTextOutput(JSON.stringify(res))
-      .setMimeType(ContentService.MimeType.JSON);
+    resultado = salvarCadastro(data);
   } catch (err) {
-    return ContentService.createTextOutput(JSON.stringify({
+    resultado = {
       status: "erro",
       message: err.message
-    })).setMimeType(ContentService.MimeType.JSON);
+    };
   }
+
+  const output = ContentService.createTextOutput(JSON.stringify(resultado));
+  output.setMimeType(ContentService.MimeType.JSON);
+  return setCorsHeaders_(output);
 }
